@@ -1,9 +1,9 @@
 {
-    "name": "htmldiff-angular",
+    "name": "v-node-htmldiff",
     "description": "Diff and markup HTML with <ins> and <del> tags",
     "companyname": "idesis GmbH",
     "copyright": "©2018, idesis GmbH; ©2012 The Network Inc. and contributors",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "identifier": "de.idesis.node-htmldiff",
     "keywords": [
         "diff",
