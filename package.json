@@ -1,9 +1,9 @@
 {
-    "name": "node-htmldiff",
+    "name": "htmldiff-angular",
     "description": "Diff and markup HTML with <ins> and <del> tags",
     "companyname": "idesis GmbH",
     "copyright": "©2018, idesis GmbH; ©2012 The Network Inc. and contributors",
-    "version": "0.9.3",
+    "version": "1.0.0",
     "identifier": "de.idesis.node-htmldiff",
     "keywords": [
         "diff",
@@ -25,7 +25,7 @@
       ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/idesis-gmbh/htmldiff.js.git"
+        "url": "git+https://github.com/nataliesantiago/htmldiff.js"
     },
     "readme": "README.md",
     "bugs": {
