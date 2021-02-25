@@ -9,7 +9,7 @@
   },
   "readme": "README.md",
   "bugs": {
-    "url": "https://github.com/mblink/issues",
+    "url": "https://github.com/mblink/issues"
   },
   "private": true,
   "license": "MIT",
@@ -24,15 +24,12 @@
   "dependencies": {},
   "devDependencies": {
     "typescript": "2.7.2",
-    "tslint": "5.9.1",
     "@types/node": "9.6.0",
     "chai": "*",
     "mocha": "*"
   },
   "scripts": {
     "test": "mocha -R min",
-    "lint": "tslint --config ./tslint.json ./*.ts ./js/*.ts",
-    "premake": "npm run lint",
-    "make": "tsc -p tsconfig.json""
+    "make": "tsc -p tsconfig.json"
   }
 }
