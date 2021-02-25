@@ -35,15 +35,11 @@
   "private": false,
   "license": "MIT",
   "main": "js/htmldiff.js",
-  "bin": {
-    "htmldiff": "./htmldiff-cli.js"
-  },
   "files": [
     "js/htmldiff.js",
     "js/htmldiff.d.ts",
     "sample/*",
-    "test/*",
-    "htmldiff-cli.js"
+    "test/*"
   ],
   "types": "js/htmldiff.d.ts",
   "dependencies": {},
@@ -56,9 +52,8 @@
   },
   "scripts": {
     "test": "mocha -R min",
-    "testsample": "node htmldiff-cli.js sample/before.html sample/after.html - -c myDiffClass -p myPrefix",
-    "lint": "tslint --exclude ./htmldiff-cli.d.ts --config ./tslint.json ./*.ts ./js/*.ts",
+    "lint": "tslint --config ./tslint.json ./*.ts ./js/*.ts",
     "premake": "npm run lint",
-    "make": "tsc -p tsconfig.json && node -e \"require('fs').unlinkSync('./htmldiff-cli.d.ts')\""
+    "make": "tsc -p tsconfig.json""
   }
 }
