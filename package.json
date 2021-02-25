@@ -1,38 +1,17 @@
 {
-  "name": "v-node-htmldiff",
+  "name": "htmldiff",
   "description": "Diff and markup HTML with <ins> and <del> tags",
-  "companyname": "idesis GmbH",
-  "copyright": "©2018, idesis GmbH; ©2012 The Network Inc. and contributors",
-  "version": "1.0.1",
-  "identifier": "de.idesis.node-htmldiff",
-  "keywords": [
-    "diff",
-    "html",
-    "htmldiff",
-    "ins",
-    "del"
-  ],
-  "homepage": "https://github.com/idesis-gmbh/htmldiff.js",
-  "author": {
-    "name": "Michael Nitze",
-    "email": "michael.nitze@idesis.de",
-    "url": "http://www.idesis.de"
-  },
-  "contributors": [
-    "The Network Inc. (http://www.tninetwork.com, https://github.com/tnwinc/htmldiff.js)",
-    "Inkling (https://www.inkling.com, https://github.com/inkling/htmldiff.js)",
-    "Ian White (ianwhitester@gmail.com, https://github.com/ian97531)"
-  ],
+  "version": "1.0.2",
+  "homepage": "https://github.com/mblink/htmldiff.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nataliesantiago/htmldiff.js"
+    "url": "git+https://github.com/mblink/htmldiff.js"
   },
   "readme": "README.md",
   "bugs": {
-    "url": "https://github.com/idesis-gmbh/htmldiff.js/issues",
-    "email": "produktion@idesis.de"
+    "url": "https://github.com/mblink/issues",
   },
-  "private": false,
+  "private": true,
   "license": "MIT",
   "main": "js/htmldiff.js",
   "files": [
