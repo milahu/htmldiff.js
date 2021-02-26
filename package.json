@@ -13,9 +13,9 @@
   },
   "private": true,
   "license": "MIT",
-  "main": "js/htmldiff.js",
+  "main": "js/htmldiff.ts",
   "files": [
-    "js/htmldiff.js",
+    "js/htmldiff.ts",
     "js/htmldiff.d.ts",
     "sample/*",
     "test/*"
