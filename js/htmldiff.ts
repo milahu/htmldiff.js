@@ -64,13 +64,8 @@
     return /--\>$/.test(word);
   }
 
-  /**
-   * Regular expression to check atomic tags.
-   * @see function diff.
-   */
-  var atomicTagsRegExp;
   // Added head and style (for style tags inside the body)
-  var defaultAtomicTagsRegExp = new RegExp('^<(iframe|object|math|svg|script|video|head|style)');
+  const atomicTagsRegExp = new RegExp('^<(iframe|object|math|svg|script|video|head|style)');
 
   /**
    * Checks if the current word is the beginning of an atomic tag. An atomic tag is one whose
@@ -121,7 +116,7 @@
    */
   function isWrappable(token: string): boolean {
     var is_img = /^<img[\s>]/.test(token);
-    return is_img || isntTag(token) || isStartOfAtomicTag(token) || isVoidTag(token);
+    return is_img || isntTag(token) || !!isStartOfAtomicTag(token) || isVoidTag(token);
   }
 
   type Token = {
@@ -993,13 +988,8 @@
    *
    * @return {string} The combined HTML content with differences wrapped in <ins> and <del> tags.
    */
-  function diff(before: string, after: string, className: string, dataPrefix: string, atomicTags: string){
+  function diff(before: string, after: string, className: string, dataPrefix: string){
     if (before === after) return before;
-
-    // Enable user provided atomic tag list.
-    atomicTags ?
-      (atomicTagsRegExp = new RegExp('^<(' + atomicTags.replace(/\s*/g, '').replace(/,/g, '|') + ')'))
-      : (atomicTagsRegExp = defaultAtomicTagsRegExp);
 
     var beforeTokens = htmlToTokens(before);
     var afterTokens = htmlToTokens(after);
