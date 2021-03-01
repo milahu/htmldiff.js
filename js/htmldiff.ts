@@ -380,88 +380,51 @@
     }
   }
 
-  /**
-   * A constructor for a binary search tree used to keep match objects in the proper order as
-   * they're found.
-   *
-   * @constructor
-   */
-  function MatchBinarySearchTree(){
-    this._root = null;
-  }
-
   type Node = {
     value: Match,
     left: Node | null,
     right: Node | null
   }
 
-  MatchBinarySearchTree.prototype = {
-    /**
-     * Adds matches to the binary search tree.
-     *
-     * @param {Match} value The match to add to the binary search tree.
-     */
-    add: function (value: Match){
-      // Create the node to hold the match value.
-      var node: Node = {
-        value: value,
+  function addToNode(node: Node | null, match: Match): Node {
+    if(node){
+      var position = compareMatches(node.value, match);
+      if (position === -1){
+        return {
+          value: node.value,
+          left: addToNode(node.left, match),
+          right: node.right
+        };
+      } else if (position === 1){
+        return {
+          value: node.value,
+          left: node.left,
+          right: addToNode(node.right, match)
+        };
+      } else {
+        return node;
+      }
+    } else {
+      return {
+        value: match,
         left: null,
         right: null
       };
-
-      var current = this._root;
-      if(current){
-        while (true){
-          // Determine if the match value should go to the left or right of the current
-          // node.
-          var position = compareMatches(current.value, value);
-          if (position === -1){
-            // The position of the match is to the left of this node.
-            if (current.left){
-              current = current.left;
-            } else {
-              current.left = node;
-              break;
-            }
-          } else if (position === 1){
-            // The position of the match is to the right of this node.
-            if (current.right){
-              current = current.right;
-            } else {
-              current.right = node;
-              break;
-            }
-          } else {
-            // If 0 was returned from compareMatches, that means the node cannot
-            // be inserted because it overlaps an existing node.
-            break;
-          }
-        }
-      } else {
-        // If no nodes exist in the tree, make this the root node.
-        this._root = node;
-      }
-    },
-
-    /**
-     * Converts the binary search tree into an array using an in-order traversal.
-     *
-     * @return {Array.<Match>} An array containing the matches in the binary search tree.
-     */
-    toArray: function(): Match[]{
-      function inOrder(node: Node | null, nodes: Match[]){
-        if (node){
-          inOrder(node.left, nodes);
-          nodes.push(node.value);
-          inOrder(node.right, nodes);
-        }
-        return nodes;
-      }
-
-      return inOrder(this._root, []);
     }
-  };
+  }
+
+  function nodeToArray(node: Node | null): Match[] {
+    function inOrder(node: Node | null, nodes: Match[]): Match[] {
+      if (node){
+        inOrder(node.left, nodes);
+        nodes.push(node.value);
+        inOrder(node.right, nodes);
+      }
+      return nodes;
+    }
+
+    return inOrder(node, []);
+  }
 
 
   /**
@@ -640,7 +603,7 @@
    */
   function findMatchingBlocks(segment: Segment): Match[] {
     // Create a binary search tree to hold the matches we find in order.
-    var matches = MatchBinarySearchTree();
+    var matches: Node | null = null;
     var match;
     var segments = [segment];
     var currSegment: Segment | undefined;
@@ -677,12 +640,12 @@
                                         rightBeforeIndex, rightAfterIndex));
           }
 
-          matches.add(match);
+          matches = addToNode(matches, match);
         }
       }
     }
 
-    return matches.toArray();
+    return nodeToArray(matches);
   }
 
   type Operation = {
