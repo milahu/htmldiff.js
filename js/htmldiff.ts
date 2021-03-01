@@ -439,7 +439,7 @@
     var beforeTokens = segment.beforeTokens;
     var afterMap = segment.afterMap;
     var lastSpace = null;
-    var bestMatch: Match | undefined = undefined;
+    var bestMatch: Match | undefined;
 
     // Iterate through the entirety of the beforeTokens to find the best match.
     for (var beforeIndex = 0; beforeIndex < beforeTokens.length; beforeIndex++){
@@ -604,7 +604,7 @@
   function findMatchingBlocks(segment: Segment): Match[] {
     // Create a binary search tree to hold the matches we find in order.
     var matches: Node | null = null;
-    var match;
+    var match: Match | undefined;
     var segments = [segment];
     var currSegment: Segment | undefined;
 
@@ -651,9 +651,9 @@
   type Operation = {
     action: "equal" | "insert" | "delete" | "replace",
     startInBefore: number,
-    endInBefore: number,
+    endInBefore?: number,
     startInAfter: number,
-    endInAfter: number
+    endInAfter?: number
   }
   /**
    * Gets a list of operations required to transform the before list of tokens into the
@@ -672,7 +672,7 @@
    *      - {number} startInAfter The beginning of the range in the list of after tokens.
    *      - {number} endInAfter The end of the range in the list of after tokens.
    */
-  function calculateOperations(beforeTokens: Token[], afterTokens: Token[]){
+  function calculateOperations(beforeTokens: Token[], afterTokens: Token[]): Operation[] {
     if (!beforeTokens) throw new Error('Missing beforeTokens');
     if (!afterTokens) throw new Error('Missing afterTokens');
 
@@ -726,8 +726,9 @@
     function isSingleWhitespace(op: Operation){
       if (op.action !== 'equal'){
         return false;
-      }
-      if (op.endInBefore - op.startInBefore !== 0){ // :facepalm:
+      } else if (!op.endInBefore) {
+        return false
+      } else if (op.endInBefore - op.startInBefore !== 0){
         return false;
       }
       return /^\s$/.test(beforeTokens.slice(op.startInBefore, op.endInBefore + 1).toString());
@@ -910,20 +911,26 @@
    */
   var OPS = {
     'equal': function(op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: number, dataPrefix: string, className: string){
-      var tokens = afterTokens.slice(op.startInAfter, op.endInAfter + 1);
+      var tokens = op.endInAfter ?
+        afterTokens.slice(op.startInAfter, op.endInAfter + 1) :
+        afterTokens.slice(op.startInAfter)
       return tokens.reduce(function(prev, curr){
         return prev + curr.string;
       }, '');
     },
     'insert': function(op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: number, dataPrefix: string, className: string){
-      var tokens = afterTokens.slice(op.startInAfter, op.endInAfter + 1);
+      var tokens = op.endInAfter ?
+        afterTokens.slice(op.startInAfter, op.endInAfter + 1) :
+        afterTokens.slice(op.startInAfter)
       var val = tokens.map(function(token){
         return token.string;
       });
       return wrap('ins', val, opIndex, dataPrefix, className);
     },
     'delete': function(op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: number, dataPrefix: string, className: string){
-      var tokens = beforeTokens.slice(op.startInBefore, op.endInBefore + 1);
+      var tokens = op.endInBefore ?
+        beforeTokens.slice(op.startInBefore, op.endInBefore + 1) :
+        beforeTokens.slice(op.startInBefore)
       var val = tokens.map(function(token){
         return token.string;
       });
