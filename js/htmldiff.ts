@@ -762,10 +762,21 @@
    * TokenWrapper has a method 'combine' which allows walking over the segments to wrap them in
    * tags.
    */
-  function TokenWrapper(tokens: string[]) {
+  type TokenNotes = {
+    tokens: string[],
+    notes: {
+      isWrappable: boolean,
+      insertedTag: boolean
+    }[]
+  }
+
+  function TokenWrapper(tokens: string[]): TokenNotes {
     return {
       tokens: tokens,
-      notes: tokens.reduce(function(data: {notes: [{isWrappable: boolean, insertedTag: boolean}], tagStack: [{tag: string, position: number}]}, token: string, index: number): {notes: [{isWrappable: boolean, insertedTag: boolean}], tagStack: [{tag: string, position: number}]} {
+      notes: tokens.reduce<{
+        notes: {isWrappable: boolean, insertedTag: boolean}[],
+        tagStack: {tag: string, position: number}[]
+      }>(function(data, token, index) {
         data.notes.push({
           isWrappable: isWrappable(token),
           insertedTag: false
@@ -798,36 +809,45 @@
    * @param {function(boolean, Array.<string>)} mapFn A function called with an array of tokens
    *      and whether those tokens are wrappable or not. The result should be a string.
    */
-  TokenWrapper.prototype.combine = function(mapFn: (b: boolean) => string[], tagFn: (t: Token) => Token){
-    var notes = this.notes;
-    var tokens = this.tokens.slice();
-    var segments = tokens.reduce(function(data: {list: {isWrappable: string, tokens: Token[]}[], status: string, lastIndex: number}, token: Token, index: number){
-      if (notes[index].insertedTag){
-        tokens[index] = tagFn(tokens[index]);
-      }
-      if (data.status === null){
-        data.status = notes[index].isWrappable;
-      }
-      var status = notes[index].isWrappable;
-      if (status !== data.status){
-        data.list.push({
-          isWrappable: data.status,
-          tokens: tokens.slice(data.lastIndex, index)
-        });
-        data.lastIndex = index;
-        data.status = status;
-      }
-      if (index === tokens.length - 1){
-        data.list.push({
-          isWrappable: data.status,
-          tokens: tokens.slice(data.lastIndex, index + 1)
-        });
-      }
-      return data;
-    }, {list: [], status: null, lastIndex: 0}).list;
+  function combineTokenNotes(
+    mapFn: (e: {isWrappable: boolean, tokens: string[]}) => string,
+    tagFn: (t: string) => string,
+    tokenNotes: TokenNotes
+  ) {
+    var notes = tokenNotes.notes;
+    var tokens = tokenNotes.tokens.slice();
+    var segments = tokens.reduce<{
+      list: {isWrappable: boolean, tokens: string[]}[],
+      status: boolean | null,
+      lastIndex: number
+    }>(
+      function(data: {list: {isWrappable: boolean, tokens: string[]}[], status: boolean | null, lastIndex: number}, token: string, index: number){
+        if (notes[index].insertedTag){
+          tokens[index] = tagFn(tokens[index]);
+        }
+        if (data.status === null){
+          data.status = notes[index].isWrappable;
+        }
+        var status = notes[index].isWrappable;
+        if (status !== data.status){
+          data.list.push({
+            isWrappable: data.status,
+            tokens: tokens.slice(data.lastIndex, index)
+          });
+          data.lastIndex = index;
+          data.status = status;
+        }
+        if (index === tokens.length - 1){
+          data.list.push({
+            isWrappable: data.status,
+            tokens: tokens.slice(data.lastIndex, index + 1)
+          });
+        }
+        return data;
+      }, {list: [], status: null, lastIndex: 0}).list;
 
     return segments.map(mapFn).join('');
-  };
+  }
 
   /**
    * Wraps and concatenates a list of tokens with a tag. Does not wrap tag tokens,
@@ -839,29 +859,33 @@
    * @param {string} className (Optional) The class name to include in the wrapper tag.
    */
   function wrap(tag: string, content: string[], opIndex: string, dataPrefix: string, className: string){
-    var wrapper = TokenWrapper(content);
+    var wrapper: TokenNotes = TokenWrapper(content);
     dataPrefix = dataPrefix ? dataPrefix + '-' : '';
     var attrs = ' data-' + dataPrefix + 'operation-index="' + opIndex + '"';
     if (className){
       attrs += ' class="' + className + '"';
     }
 
-    return wrapper.combine(function(segment){
-      if (segment.isWrappable){
-        var val = segment.tokens.join('');
-        if (val.trim()){
-          return '<' + tag + attrs + '>' + val + '</' + tag + '>';
+    return combineTokenNotes(
+      function(segment){
+        if (segment.isWrappable){
+          var val = segment.tokens.join('');
+          if (val.trim()){
+            return '<' + tag + attrs + '>' + val + '</' + tag + '>';
+          }
+        } else {
+          return segment.tokens.join('');
         }
-      } else {
-        return segment.tokens.join('');
-      }
-      return '';
-    }, function(openingTag: string){
-      var dataAttrs = ' data-diff-node="' + tag + '"';
-      dataAttrs += ' data-' + dataPrefix + 'operation-index="' + opIndex + '"';
+        return '';
+      },
+      function(openingTag: string){
+        var dataAttrs = ' data-diff-node="' + tag + '"';
+        dataAttrs += ' data-' + dataPrefix + 'operation-index="' + opIndex + '"';
 
-      return openingTag.replace(/>\s*$/, dataAttrs + '$&');
-    });
+        return openingTag.replace(/>\s*$/, dataAttrs + '$&');
+      },
+      wrapper
+    );
   }
 
   /**
