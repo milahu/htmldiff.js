@@ -649,7 +649,7 @@
   }
 
   type Operation = {
-    action: string, // "equal" | "insert" | "delete" | "replace"
+    action: "equal" | "insert" | "delete" | "replace",
     startInBefore: number,
     endInBefore: number,
     startInAfter: number,
@@ -685,7 +685,7 @@
 
     for (var index = 0; index < matches.length; index++){
       var match = matches[index];
-      var actionUpToMatchPositions = 'none';
+      var actionUpToMatchPositions: "equal" | "insert" | "delete" | "replace" | "none"  = "none";
       if (positionInBefore === match.startInBefore){
         if (positionInAfter !== match.startInAfter){
           actionUpToMatchPositions = 'insert';
@@ -730,7 +730,7 @@
       if (op.endInBefore - op.startInBefore !== 0){ // :facepalm:
         return false;
       }
-      return /^\s$/.test(beforeTokens.slice(op.startInBefore, op.endInBefore + 1).toString);
+      return /^\s$/.test(beforeTokens.slice(op.startInBefore, op.endInBefore + 1).toString());
     }
 
     for (var i = 0; i < operations.length; i++){
@@ -858,7 +858,7 @@
    * @param {string} dataPrefix (Optional) The prefix to use in data attributes.
    * @param {string} className (Optional) The class name to include in the wrapper tag.
    */
-  function wrap(tag: string, content: string[], opIndex: string, dataPrefix: string, className: string){
+  function wrap(tag: string, content: string[], opIndex: number, dataPrefix: string, className: string){
     var wrapper: TokenNotes = TokenWrapper(content);
     dataPrefix = dataPrefix ? dataPrefix + '-' : '';
     var attrs = ' data-' + dataPrefix + 'operation-index="' + opIndex + '"';
@@ -909,20 +909,20 @@
    * @return {string} The rendering of that operation.
    */
   var OPS = {
-    'equal': function(op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: string, dataPrefix: string, className: string){
+    'equal': function(op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: number, dataPrefix: string, className: string){
       var tokens = afterTokens.slice(op.startInAfter, op.endInAfter + 1);
       return tokens.reduce(function(prev, curr){
         return prev + curr.string;
       }, '');
     },
-    'insert': function(op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: string, dataPrefix: string, className: string){
+    'insert': function(op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: number, dataPrefix: string, className: string){
       var tokens = afterTokens.slice(op.startInAfter, op.endInAfter + 1);
       var val = tokens.map(function(token){
         return token.string;
       });
       return wrap('ins', val, opIndex, dataPrefix, className);
     },
-    'delete': function(op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: string, dataPrefix: string, className: string){
+    'delete': function(op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: number, dataPrefix: string, className: string){
       var tokens = beforeTokens.slice(op.startInBefore, op.endInBefore + 1);
       var val = tokens.map(function(token){
         return token.string;
