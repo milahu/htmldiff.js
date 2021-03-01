@@ -909,7 +909,9 @@
    *
    * @return {string} The rendering of that operation.
    */
-  var OPS = {
+  var OPS: {
+    [K in "equal" | "insert" | "delete" | "replace"] : (op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: number, dataPrefix: string, className: string) => string
+  } = {
     'equal': function(op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: number, dataPrefix: string, className: string){
       var tokens = op.endInAfter ?
         afterTokens.slice(op.startInAfter, op.endInAfter + 1) :
