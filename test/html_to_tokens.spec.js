@@ -1,11 +1,12 @@
+import {createToken, findMatchingBlocks, htmlToTokens} from "../dist/htmldiff.js";
+
+
 describe('htmlToTokens', function(){
-    var cut, res, diff, createToken, tokenize;
+    var cut, res, tokenize;
 
     beforeEach(function(){
-        diff = require('../js/htmldiff')
-        cut = diff.htmlToTokens;
+        cut = htmlToTokens;
 
-        createToken = diff.findMatchingBlocks.createToken;
         tokenize = function(tokens){
             return tokens.map(function(token){
                 return createToken(token);

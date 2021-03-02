@@ -113,7 +113,7 @@ function isWrappable(token) {
  *
  * @return {Object} A token object with a string and key property.
  */
-function createToken(currentWord) {
+export function createToken(currentWord) {
     return {
         string: currentWord,
         key: getKeyForToken(currentWord)
@@ -149,7 +149,7 @@ function Match(startInBefore, startInAfter, length, segment) {
  *
  * @return {Array.<string>} The list of tokens.
  */
-function htmlToTokens(html) {
+export function htmlToTokens(html) {
     var mode = 'char';
     var currentWord = '';
     var currentAtomicTag = '';
@@ -319,7 +319,7 @@ function getKeyForToken(token) {
  *
  * @return {Object} A mapping that can be used to search for tokens.
  */
-function createMap(tokens) {
+export function createMap(tokens) {
     return tokens.reduce(function (map, token, index) {
         var _a;
         if (map[token.key]) {
@@ -401,7 +401,7 @@ function nodeToArray(node) {
  *
  * @return {Match} The best match.
  */
-function findBestMatch(segment) {
+export function findBestMatch(segment) {
     var beforeTokens = segment.beforeTokens;
     var afterMap = segment.afterMap;
     var lastSpace = null;
@@ -526,7 +526,7 @@ function getFullMatch(segment, beforeStart, afterStart, minLength, lookBehind) {
  *
  * @return {Segment} The segment object.
  */
-function createSegment(beforeTokens, afterTokens, beforeIndex, afterIndex) {
+export function createSegment(beforeTokens, afterTokens, beforeIndex, afterIndex) {
     return {
         beforeTokens: beforeTokens,
         afterTokens: afterTokens,
@@ -544,7 +544,7 @@ function createSegment(beforeTokens, afterTokens, beforeIndex, afterIndex) {
  *
  * @return {Array.<Match>} The list of matching blocks in this range.
  */
-function findMatchingBlocks(segment) {
+export function findMatchingBlocks(segment) {
     // Create a binary search tree to hold the matches we find in order.
     var matches = null;
     var match;
@@ -597,7 +597,7 @@ function findMatchingBlocks(segment) {
  *      - {number} startInAfter The beginning of the range in the list of after tokens.
  *      - {number} endInAfter The end of the range in the list of after tokens.
  */
-function calculateOperations(beforeTokens, afterTokens) {
+export function calculateOperations(beforeTokens, afterTokens) {
     if (!beforeTokens)
         throw new Error('Missing beforeTokens');
     if (!afterTokens)
@@ -840,7 +840,7 @@ var OPS = {
  *
  * @return {string} The rendering of the list of operations.
  */
-function renderOperations(beforeTokens, afterTokens, operations, dataPrefix, className) {
+export function renderOperations(beforeTokens, afterTokens, operations, dataPrefix, className) {
     return operations.reduce(function (rendering, op, index) {
         return rendering + OPS[op.action](op, beforeTokens, afterTokens, index, dataPrefix, className);
     }, '');
@@ -860,7 +860,7 @@ function renderOperations(beforeTokens, afterTokens, operations, dataPrefix, cla
  *
  * @return {string} The combined HTML content with differences wrapped in <ins> and <del> tags.
  */
-export function diff(before, after, className, dataPrefix) {
+export default function diff(before, after, className, dataPrefix) {
     if (before === after)
         return before;
     var beforeTokens = htmlToTokens(before);

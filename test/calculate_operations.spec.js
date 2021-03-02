@@ -1,10 +1,12 @@
+import {calculateOperations, htmlToTokens} from "../dist/htmldiff.js";
+
 // Calculates the differences into a list of edit operations.
 describe('calculateOperations', function(){
     var cut, res, tokenize;
 
     beforeEach(function(){
-        cut = require('../js/htmldiff').calculateOperations;
-        tokenize = require('../js/htmldiff').htmlToTokens;
+        cut = calculateOperations;
+        tokenize = htmlToTokens;
     });
 
     it('should be a function', function(){

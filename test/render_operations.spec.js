@@ -1,9 +1,10 @@
+import {calculateOperations, createToken, renderOperations} from "../dist/htmldiff.js";
+
+
 describe('renderOperations', function(){
-    var cut, res, createToken, tokenize;
+    var cut, res, tokenize;
 
     beforeEach(function(){
-        var diff = require('../js/htmldiff');
-        createToken = diff.findMatchingBlocks.createToken;
 
         tokenize = function(tokens){
             return tokens.map(function(token){
@@ -12,8 +13,8 @@ describe('renderOperations', function(){
         };
 
         cut = function(before, after){
-            var ops = diff.calculateOperations(before, after);
-            return diff.renderOperations(before, after, ops);
+            var ops = calculateOperations(before, after);
+            return renderOperations(before, after, ops);
         };
     });
 

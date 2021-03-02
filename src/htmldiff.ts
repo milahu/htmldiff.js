@@ -129,7 +129,7 @@ type Token = {
  *
  * @return {Object} A token object with a string and key property.
  */
-function createToken(currentWord: string): Token {
+export function createToken(currentWord: string): Token {
   return {
     string: currentWord,
     key: getKeyForToken(currentWord)
@@ -178,7 +178,7 @@ function Match(startInBefore: number, startInAfter: number, length: number, segm
  *
  * @return {Array.<string>} The list of tokens.
  */
-function htmlToTokens(html: string): Token[] {
+export function htmlToTokens(html: string): Token[] {
   var mode = 'char';
   var currentWord = '';
   var currentAtomicTag = '';
@@ -342,7 +342,7 @@ function getKeyForToken(token: string){
  *
  * @return {Object} A mapping that can be used to search for tokens.
  */
-function createMap(tokens: Token[]): Record<string, number[]> {
+export function createMap(tokens: Token[]): Record<string, number[]> {
   return tokens.reduce(
     function(map: Record<string, number[]>, token: Token, index: number) {
       if (map[token.key]){
@@ -432,7 +432,7 @@ function nodeToArray(node: TreeNode | null): Match[] {
  *
  * @return {Match} The best match.
  */
-function findBestMatch(segment: Segment): Match | undefined {
+export function findBestMatch(segment: Segment): Match | undefined {
   var beforeTokens = segment.beforeTokens;
   var afterMap = segment.afterMap;
   var lastSpace = null;
@@ -579,7 +579,7 @@ type Segment = {
  *
  * @return {Segment} The segment object.
  */
-function createSegment(beforeTokens: Token[], afterTokens: Token[], beforeIndex: number, afterIndex: number): Segment {
+export function createSegment(beforeTokens: Token[], afterTokens: Token[], beforeIndex: number, afterIndex: number): Segment {
   return {
     beforeTokens: beforeTokens,
     afterTokens: afterTokens,
@@ -598,7 +598,7 @@ function createSegment(beforeTokens: Token[], afterTokens: Token[], beforeIndex:
  *
  * @return {Array.<Match>} The list of matching blocks in this range.
  */
-function findMatchingBlocks(segment: Segment): Match[] {
+export function findMatchingBlocks(segment: Segment): Match[] {
   // Create a binary search tree to hold the matches we find in order.
   var matches: TreeNode | null = null;
   var match: Match | undefined;
@@ -669,7 +669,7 @@ type Operation = {
  *      - {number} startInAfter The beginning of the range in the list of after tokens.
  *      - {number} endInAfter The end of the range in the list of after tokens.
  */
-function calculateOperations(beforeTokens: Token[], afterTokens: Token[]): Operation[] {
+export function calculateOperations(beforeTokens: Token[], afterTokens: Token[]): Operation[] {
   if (!beforeTokens) throw new Error('Missing beforeTokens');
   if (!afterTokens) throw new Error('Missing afterTokens');
 
@@ -957,7 +957,7 @@ var OPS: {
  *
  * @return {string} The rendering of the list of operations.
  */
-function renderOperations(beforeTokens: Token[], afterTokens: Token[], operations: Operation[], dataPrefix: string, className: string){
+export function renderOperations(beforeTokens: Token[], afterTokens: Token[], operations: Operation[], dataPrefix: string, className: string){
   return operations.reduce(function(rendering, op: Operation, index){
     return rendering + OPS[op.action](
       op, beforeTokens, afterTokens, index, dataPrefix, className);
@@ -979,7 +979,7 @@ function renderOperations(beforeTokens: Token[], afterTokens: Token[], operation
  *
  * @return {string} The combined HTML content with differences wrapped in <ins> and <del> tags.
  */
-export function diff(before: string, after: string, className: string, dataPrefix: string){
+export default function diff(before: string, after: string, className: string, dataPrefix: string){
   if (before === after) return before;
 
   var beforeTokens = htmlToTokens(before);

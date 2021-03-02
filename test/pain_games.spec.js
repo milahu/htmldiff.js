@@ -1,9 +1,7 @@
-describe('Pain Games', function(){
-    var cut, res;
+import cut from "../dist/htmldiff.js";
 
-    beforeEach(function(){
-        cut = require('../js/htmldiff');
-    });
+describe('Pain Games', function(){
+    var res;
 
     describe('When an entire sentence is replaced', function(){
         beforeEach(function(){
