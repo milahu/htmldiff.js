@@ -793,7 +793,7 @@ var OPS = {
     'equal': function (op, beforeTokens, afterTokens, opIndex, dataPrefix, className) {
         var tokens = op.endInAfter ?
             afterTokens.slice(op.startInAfter, op.endInAfter + 1) :
-            afterTokens.slice(op.startInAfter);
+            afterTokens.slice(op.startInAfter, 1);
         return tokens.reduce(function (prev, curr) {
             return prev + curr.string;
         }, '');
@@ -801,7 +801,7 @@ var OPS = {
     'insert': function (op, beforeTokens, afterTokens, opIndex, dataPrefix, className) {
         var tokens = op.endInAfter ?
             afterTokens.slice(op.startInAfter, op.endInAfter + 1) :
-            afterTokens.slice(op.startInAfter);
+            afterTokens.slice(op.startInAfter, 1);
         var val = tokens.map(function (token) {
             return token.string;
         });
@@ -810,7 +810,7 @@ var OPS = {
     'delete': function (op, beforeTokens, afterTokens, opIndex, dataPrefix, className) {
         var tokens = op.endInBefore ?
             beforeTokens.slice(op.startInBefore, op.endInBefore + 1) :
-            beforeTokens.slice(op.startInBefore);
+            beforeTokens.slice(op.startInBefore, 1);
         var val = tokens.map(function (token) {
             return token.string;
         });
