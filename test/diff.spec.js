@@ -1,11 +1,11 @@
-import cut, {htmlToTokens, calculateOperations} from "../dist/htmldiff.js";
+import diff, {htmlToTokens, calculateOperations} from "../dist/htmldiff.js";
 
 describe('Diff', function(){
     var res;
 
     describe('When both inputs are the same', function(){
       beforeEach(function(){
-        res = cut('input text', 'input text');
+        res = diff('input text', 'input text');
       });
 
       it('should return the text', function(){
@@ -15,7 +15,7 @@ describe('Diff', function(){
 
     describe('When a letter is added', function(){
       beforeEach(function(){
-        res = cut('input', 'input 2');
+        res = diff('input', 'input 2');
       });
 
       it('should mark the new letter', function(){
@@ -25,21 +25,21 @@ describe('Diff', function(){
 
     describe('Whitespace differences', function(){
       it('should collapse adjacent whitespace', function(){
-        expect(cut('Much \n\t    spaces', 'Much spaces')).to.equal('Much spaces');
+        expect(diff('Much \n\t    spaces', 'Much spaces')).to.equal('Much spaces');
       });
 
       it('should consider non-breaking spaces as equal', function(){
-        expect(cut('Hello&nbsp;world', 'Hello&#160;world')).to.equal('Hello&#160;world');
+        expect(diff('Hello&nbsp;world', 'Hello&#160;world')).to.equal('Hello&#160;world');
       });
 
       it('should consider non-breaking spaces and non-adjacent regular spaces as equal', function(){
-        expect(cut('Hello&nbsp;world', 'Hello world')).to.equal('Hello world');
+        expect(diff('Hello&nbsp;world', 'Hello world')).to.equal('Hello world');
       });
     }); // describe('Whitespace differences')
 
     describe('When a class name is specified', function(){
       it('should include the class in the wrapper tags', function(){
-        expect(cut('input', 'input 2', 'diff-result')).to.equal(
+        expect(diff('input', 'input 2', 'diff-result')).to.equal(
           'input<ins data-operation-index="1" class="diff-result"> 2</ins>');
       });
     }); // describe('When a class name is specified')
