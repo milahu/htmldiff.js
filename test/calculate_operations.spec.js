@@ -2,24 +2,19 @@ import {calculateOperations, htmlToTokens} from "../dist/htmldiff.js";
 
 // Calculates the differences into a list of edit operations.
 describe('calculateOperations', function(){
-    var cut, res, tokenize;
-
-    beforeEach(function(){
-        cut = calculateOperations;
-        tokenize = htmlToTokens;
-    });
+    var res;
 
     it('should be a function', function(){
-        expect(cut).is.a('function');
+        expect(calculateOperations).is.a('function');
     });
 
     describe('Actions', function(){
         describe('In the middle', function(){
             describe('Replace', function(){
                 beforeEach(function(){
-                    var before = tokenize('working on it');
-                    var after = tokenize('working in it');
-                    res = cut(before, after);
+                    var before = htmlToTokens('working on it');
+                    var after = htmlToTokens('working in it');
+                    res = calculateOperations(before, after);
                 });
 
                 it('should result in 3 operations', function(){
@@ -39,9 +34,9 @@ describe('calculateOperations', function(){
 
             describe('Insert', function(){
                 beforeEach(function(){
-                    var before = tokenize('working it');
-                    var after = tokenize('working in it');
-                    res = cut(before, after);
+                    var before = htmlToTokens('working it');
+                    var after = htmlToTokens('working in it');
+                    res = calculateOperations(before, after);
                 });
 
                 it('should result in 3 operations', function(){
@@ -60,9 +55,9 @@ describe('calculateOperations', function(){
 
                 describe('More than one word', function(){
                     beforeEach(function(){
-                        var before = tokenize('working it');
-                        var after =  tokenize('working all up on it');
-                        res = cut(before, after);
+                        var before = htmlToTokens('working it');
+                        var after =  htmlToTokens('working all up on it');
+                        res = calculateOperations(before, after);
                     });
 
                     it('should still have 3 operations', function(){
@@ -83,9 +78,9 @@ describe('calculateOperations', function(){
 
             describe('Delete', function(){
                 beforeEach(function(){
-                    var before = tokenize('this is a lot of text');
-                    var after = tokenize('this is text');
-                    res = cut(before, after);
+                    var before = htmlToTokens('this is a lot of text');
+                    var after = htmlToTokens('this is text');
+                    res = calculateOperations(before, after);
                 });
 
                 it('should return 3 operations', function(){
@@ -105,9 +100,9 @@ describe('calculateOperations', function(){
 
             describe('Equal', function(){
                 beforeEach(function(){
-                    var before = tokenize('this is what it sounds like');
-                    var after = tokenize('this is what it sounds like');
-                    res = cut(before, after);
+                    var before = htmlToTokens('this is what it sounds like');
+                    var after = htmlToTokens('this is what it sounds like');
+                    res = calculateOperations(before, after);
                 });
 
                 it('should return a single op', function(){
@@ -126,9 +121,9 @@ describe('calculateOperations', function(){
         describe('At the beginning', function(){
             describe('Replace', function(){
                 beforeEach(function(){
-                    var before = tokenize('I dont like veggies');
-                    var after = tokenize('Joe loves veggies');
-                    res = cut(before, after);
+                    var before = htmlToTokens('I dont like veggies');
+                    var after = htmlToTokens('Joe loves veggies');
+                    res = calculateOperations(before, after);
                 });
 
                 it('should return 2 operations', function(){
@@ -148,9 +143,9 @@ describe('calculateOperations', function(){
 
             describe('Insert', function(){
                 beforeEach(function(){
-                    var before = tokenize('dog');
-                    var after = tokenize('the shaggy dog');
-                    res = cut(before, after);
+                    var before = htmlToTokens('dog');
+                    var after = htmlToTokens('the shaggy dog');
+                    res = calculateOperations(before, after);
                 });
 
                 it('should return 2 operations', function(){
@@ -170,9 +165,9 @@ describe('calculateOperations', function(){
 
             describe('Delete', function(){
                 beforeEach(function(){
-                    var before = tokenize('awesome dog barks');
-                    var after = tokenize('dog barks');
-                    res = cut(before, after);
+                    var before = htmlToTokens('awesome dog barks');
+                    var after = htmlToTokens('dog barks');
+                    res = calculateOperations(before, after);
                 });
 
                 it('should return 2 operations', function(){
@@ -194,9 +189,9 @@ describe('calculateOperations', function(){
         describe('At the end', function(){
             describe('Replace', function(){
                 beforeEach(function(){
-                    var before = tokenize('the dog bit the cat');
-                    var after = tokenize('the dog bit a bird');
-                    res = cut(before, after);
+                    var before = htmlToTokens('the dog bit the cat');
+                    var after = htmlToTokens('the dog bit a bird');
+                    res = calculateOperations(before, after);
                 });
 
                 it('should return 2 operations', function(){
@@ -216,9 +211,9 @@ describe('calculateOperations', function(){
 
             describe('Insert', function(){
                 beforeEach(function(){
-                    var before = tokenize('this is a dog');
-                    var after = tokenize('this is a dog that barks');
-                    res = cut(before, after);
+                    var before = htmlToTokens('this is a dog');
+                    var after = htmlToTokens('this is a dog that barks');
+                    res = calculateOperations(before, after);
                 });
 
                 it('should return 2 operations', function(){
@@ -238,9 +233,9 @@ describe('calculateOperations', function(){
 
             describe('Delete', function(){
                 beforeEach(function(){
-                    var before = tokenize('this is a dog that barks');
-                    var after = tokenize('this is a dog');
-                    res = cut(before, after);
+                    var before = htmlToTokens('this is a dog that barks');
+                    var after = htmlToTokens('this is a dog');
+                    res = calculateOperations(before, after);
                 });
 
                 it('should have 2 operations', function(){
@@ -263,9 +258,9 @@ describe('calculateOperations', function(){
     describe('Action Combination', function(){
         describe('dont absorb non-single-whitespace tokens', function(){
             beforeEach(function(){
-                var before = tokenize('I  am awesome');
-                var after = tokenize('You  are great');
-                res = cut(before, after);
+                var before = htmlToTokens('I  am awesome');
+                var after = htmlToTokens('You  are great');
+                res = calculateOperations(before, after);
             });
 
             it('should return 3 actions', function(){
