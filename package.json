@@ -15,10 +15,10 @@
   "license": "MIT",
   "main": "dist/htmldiff.ts",
   "files": [
-    "js/htmldiff.ts",
-    "js/htmldiff.d.ts",
-    "sample/*",
-    "test/*"
+    "dist/htmldiff.d.ts",
+    "dist/htmldiff.js",
+    "dist/htmldiff.js.map",
+    "sample/*"
   ],
   "type": "module",
   "types": "dist/htmldiff.d.ts",
