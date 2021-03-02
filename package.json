@@ -20,6 +20,7 @@
     "sample/*",
     "test/*"
   ],
+  "type": "module",
   "types": "dist/htmldiff.d.ts",
   "dependencies": {},
   "devDependencies": {
