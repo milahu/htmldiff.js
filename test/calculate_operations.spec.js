@@ -47,7 +47,7 @@ describe('calculateOperations', function(){
           expect(res[1]).eql({
             action          : 'insert',
             startInBefore   : 2,
-            endInBefore     : null,
+            endInBefore     : undefined,
             startInAfter    : 2,
             endInAfter      : 3
           });
@@ -68,7 +68,7 @@ describe('calculateOperations', function(){
             expect(res[1]).eql({
               action          : 'insert',
               startInBefore   : 2,
-              endInBefore     : null,
+              endInBefore     : undefined,
               startInAfter    : 2,
               endInAfter      : 7
             });
@@ -93,7 +93,7 @@ describe('calculateOperations', function(){
             startInBefore   : 4,
             endInBefore     : 9,
             startInAfter    : 4,
-            endInAfter      : null
+            endInAfter      : undefined
           });
         });
       });
@@ -156,7 +156,7 @@ describe('calculateOperations', function(){
           expect(res[0]).eql({
             action          : 'insert',
             startInBefore   : 0,
-            endInBefore     : null,
+            endInBefore     : undefined,
             startInAfter    : 0,
             endInAfter      : 3
           });
@@ -180,7 +180,7 @@ describe('calculateOperations', function(){
             startInBefore   : 0,
             endInBefore     : 1,
             startInAfter    : 0,
-            endInAfter      : null
+            endInAfter      : undefined
           });
         });
       });
@@ -224,7 +224,7 @@ describe('calculateOperations', function(){
           expect(res[1]).eql({
             action          : 'insert',
             startInBefore   : 7,
-            endInBefore     : null,
+            endInBefore     : undefined,
             startInAfter    : 7,
             endInAfter      : 10
           });
@@ -248,7 +248,7 @@ describe('calculateOperations', function(){
             startInBefore   : 7,
             endInBefore     : 10,
             startInAfter    : 7,
-            endInAfter      : null
+            endInAfter      : undefined
           });
         });
       });
