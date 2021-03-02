@@ -1,7 +1,7 @@
 {
   "name": "htmldiff",
   "description": "Diff and markup HTML with <ins> and <del> tags",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "homepage": "https://github.com/mblink/htmldiff.js",
   "repository": {
     "type": "git",
@@ -13,23 +13,23 @@
   },
   "private": true,
   "license": "MIT",
-  "main": "js/htmldiff.ts",
+  "main": "dist/htmldiff.ts",
   "files": [
     "js/htmldiff.ts",
     "js/htmldiff.d.ts",
     "sample/*",
     "test/*"
   ],
-  "types": "js/htmldiff.d.ts",
+  "types": "dist/htmldiff.d.ts",
   "dependencies": {},
   "devDependencies": {
-    "typescript": "2.7.2",
-    "@types/node": "9.6.0",
+    "typescript": "4.2.2",
+    "@types/node": "14.14.31",
     "chai": "*",
     "mocha": "*"
   },
   "scripts": {
-    "test": "mocha -R min",
+    "test": "npm run make && mocha -R min",
     "make": "tsc -p tsconfig.json"
   }
 }
