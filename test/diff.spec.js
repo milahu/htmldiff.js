@@ -74,6 +74,25 @@ describe('Diff', function(){
     });
   });
 
+  describe('Anchor Differences', function() {
+    const a11 = '<a href="1">1</a>';
+    const a12 = '<a href="1">2</a>';
+    const a21 = '<a href="2">1</a>';
+    const a22 = '<a href="2">2</a>';
+    it('should show two anchors as the same if they are the same', function() {
+      expect(diff(a11, a11)).to.eql(a11);
+    });
+    it('should show two anchors as different if their text is different', function() {
+      expect(diff(a11, a12)).to.eql('<a href="1"><del data-operation-index="1">1</del><ins data-operation-index="1">2</ins></a>');
+    });
+    it('should show two anchors as different if their href is different', function() {
+      expect(diff(a11, a21)).to.eql(`<del data-operation-index="1">${a11}</del><ins data-operation-index="1">${a21}</ins>`);
+    });
+    it('should show two anchors as different if their href and text is different', function() {
+      expect(diff(a11, a22)).to.eql(`<del data-operation-index="1">${a11}</del><ins data-operation-index="1">${a22}</ins>`);
+    });
+  });
+
   describe('Widget Differences', function(){
     it('show two widgets as different if their data attributes are different', function() {
       var before = htmlToTokens('<object data="a.jpg"></object>');
