@@ -1,5 +1,5 @@
 declare type Token = {
-    string: string;
+    str: string;
     key: string;
 };
 /**
@@ -23,16 +23,6 @@ declare type Match = {
     segmentEndInBefore: number;
     segmentEndInAfter: number;
 };
-/**
- * A Match stores the information of a matching block. A matching block is a list of
- * consecutive tokens that appear in both the before and after lists of tokens.
- *
- * @param {number} startInBefore The index of the first token in the list of before tokens.
- * @param {number} startInAfter The index of the first token in the list of after tokens.
- * @param {number} length The number of consecutive matching tokens in this block.
- * @param {Segment} segment The segment where the match was found.
- */
-declare function Match(startInBefore: number, startInAfter: number, length: number, segment: Segment): Match;
 /**
  * Tokenizes a string of HTML.
  *
@@ -89,7 +79,7 @@ export declare function createSegment(beforeTokens: Token[], afterTokens: Token[
  */
 export declare function findMatchingBlocks(segment: Segment): Match[];
 declare type Operation = {
-    action: "equal" | "insert" | "delete" | "replace";
+    action: 'equal' | 'insert' | 'delete' | 'replace';
     startInBefore: number;
     endInBefore?: number;
     startInAfter: number;

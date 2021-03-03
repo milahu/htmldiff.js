@@ -1,3 +1,14 @@
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
 /**
  * htmldiff.js is a library that compares HTML content. It creates a diff between two
  * HTML documents by combining the two documents and wrapping the differences with
@@ -34,6 +45,7 @@ function isStartOfTag(char) {
 function isWhitespace(char) {
     return /^\s+$/.test(char);
 }
+var tagRegExp = /^\s*<([^!>][^>]*)>\s*$/;
 /**
  * Determines if the given token is a tag.
  *
@@ -43,7 +55,7 @@ function isWhitespace(char) {
  */
 function isTag(token) {
     var _a;
-    var match = token.match(/^\s*<([^!>][^>]*)>\s*$/);
+    var match = tagRegExp.exec(token);
     return !!match && ((_a = match[1]) === null || _a === void 0 ? void 0 : _a.trim().split(' ')[0]);
 }
 function isntTag(token) {
@@ -53,10 +65,10 @@ function isStartOfHTMLComment(word) {
     return /^<!--/.test(word);
 }
 function isEndOfHTMLComment(word) {
-    return /--\>$/.test(word);
+    return /-->$/.test(word);
 }
 // Added head and style (for style tags inside the body)
-var atomicTagsRegExp = new RegExp('^<(iframe|object|math|svg|script|video|head|style)');
+var atomicTagsRegExp = /^<(iframe|object|math|svg|script|video|head|style)/;
 /**
  * Checks if the current word is the beginning of an atomic tag. An atomic tag is one whose
  * child nodes should not be compared - the entire tag should be treated as one token. This
@@ -102,8 +114,8 @@ function isVoidTag(token) {
  * @return {boolean} True if the token can be wrapped inside a tag, false otherwise.
  */
 function isWrappable(token) {
-    var is_img = /^<img[\s>]/.test(token);
-    return is_img || isntTag(token) || !!isStartOfAtomicTag(token) || isVoidTag(token);
+    var isImg = /^<img[\s>]/.test(token);
+    return isImg || isntTag(token) || !!isStartOfAtomicTag(token) || isVoidTag(token);
 }
 /**
  * Creates a token that holds a string and key representation. The key is used for diffing
@@ -115,7 +127,7 @@ function isWrappable(token) {
  */
 export function createToken(currentWord) {
     return {
-        string: currentWord,
+        str: currentWord,
         key: getKeyForToken(currentWord)
     };
 }
@@ -128,7 +140,7 @@ export function createToken(currentWord) {
  * @param {number} length The number of consecutive matching tokens in this block.
  * @param {Segment} segment The segment where the match was found.
  */
-function Match(startInBefore, startInAfter, length, segment) {
+function makeMatch(startInBefore, startInAfter, length, segment) {
     return {
         segment: segment,
         length: length,
@@ -150,110 +162,121 @@ function Match(startInBefore, startInAfter, length, segment) {
  * @return {Array.<string>} The list of tokens.
  */
 export function htmlToTokens(html) {
+    var e_1, _a;
     var mode = 'char';
     var currentWord = '';
     var currentAtomicTag = '';
     var words = [];
-    for (var i = 0; i < html.length; i++) {
-        var char = html[i] || "";
-        switch (mode) {
-            case 'tag':
-                var atomicTag = isStartOfAtomicTag(currentWord);
-                if (atomicTag) {
-                    mode = 'atomic_tag';
-                    currentAtomicTag = atomicTag;
-                    currentWord += char;
-                }
-                else if (isStartOfHTMLComment(currentWord)) {
-                    mode = 'html_comment';
-                    currentWord += char;
-                }
-                else if (isEndOfTag(char)) {
-                    currentWord += '>';
-                    words.push(createToken(currentWord));
-                    currentWord = '';
-                    if (isWhitespace(char)) {
-                        mode = 'whitespace';
+    try {
+        for (var html_1 = __values(html), html_1_1 = html_1.next(); !html_1_1.done; html_1_1 = html_1.next()) {
+            var char = html_1_1.value;
+            switch (mode) {
+                case 'tag': {
+                    var atomicTag = isStartOfAtomicTag(currentWord);
+                    if (atomicTag) {
+                        mode = 'atomic_tag';
+                        currentAtomicTag = atomicTag;
+                        currentWord += char;
+                    }
+                    else if (isStartOfHTMLComment(currentWord)) {
+                        mode = 'html_comment';
+                        currentWord += char;
+                    }
+                    else if (isEndOfTag(char)) {
+                        currentWord += '>';
+                        words.push(createToken(currentWord));
+                        currentWord = '';
+                        if (isWhitespace(char)) {
+                            mode = 'whitespace';
+                        }
+                        else {
+                            mode = 'char';
+                        }
                     }
                     else {
+                        currentWord += char;
+                    }
+                    break;
+                }
+                case 'atomic_tag':
+                    if (isEndOfTag(char) && isEndOfAtomicTag(currentWord, currentAtomicTag)) {
+                        currentWord += '>';
+                        words.push(createToken(currentWord));
+                        currentWord = '';
+                        currentAtomicTag = '';
                         mode = 'char';
                     }
-                }
-                else {
-                    currentWord += char;
-                }
-                break;
-            case 'atomic_tag':
-                if (isEndOfTag(char) && isEndOfAtomicTag(currentWord, currentAtomicTag)) {
-                    currentWord += '>';
-                    words.push(createToken(currentWord));
-                    currentWord = '';
-                    currentAtomicTag = '';
-                    mode = 'char';
-                }
-                else {
-                    currentWord += char;
-                }
-                break;
-            case 'html_comment':
-                currentWord += char;
-                if (isEndOfHTMLComment(currentWord)) {
-                    currentWord = '';
-                    mode = 'char';
-                }
-                break;
-            case 'char':
-                if (isStartOfTag(char)) {
-                    if (currentWord) {
-                        words.push(createToken(currentWord));
+                    else {
+                        currentWord += char;
                     }
-                    currentWord = '<';
-                    mode = 'tag';
-                }
-                else if (/\s/.test(char)) {
-                    if (currentWord) {
-                        words.push(createToken(currentWord));
-                    }
-                    currentWord = char;
-                    mode = 'whitespace';
-                }
-                else if (/[\w\d\#@]/.test(char)) {
+                    break;
+                case 'html_comment':
                     currentWord += char;
-                }
-                else if (/&/.test(char)) {
-                    if (currentWord) {
-                        words.push(createToken(currentWord));
+                    if (isEndOfHTMLComment(currentWord)) {
+                        currentWord = '';
+                        mode = 'char';
                     }
-                    currentWord = char;
-                }
-                else {
-                    currentWord += char;
-                    words.push(createToken(currentWord));
-                    currentWord = '';
-                }
-                break;
-            case 'whitespace':
-                if (isStartOfTag(char)) {
-                    if (currentWord) {
-                        words.push(createToken(currentWord));
+                    break;
+                case 'char':
+                    if (isStartOfTag(char)) {
+                        if (currentWord) {
+                            words.push(createToken(currentWord));
+                        }
+                        currentWord = '<';
+                        mode = 'tag';
                     }
-                    currentWord = '<';
-                    mode = 'tag';
-                }
-                else if (isWhitespace(char)) {
-                    currentWord += char;
-                }
-                else {
-                    if (currentWord) {
-                        words.push(createToken(currentWord));
+                    else if (/\s/.test(char)) {
+                        if (currentWord) {
+                            words.push(createToken(currentWord));
+                        }
+                        currentWord = char;
+                        mode = 'whitespace';
                     }
-                    currentWord = char;
-                    mode = 'char';
-                }
-                break;
-            default:
-                throw new Error('Unknown mode ' + mode);
+                    else if (/[\w\d#@]/.test(char)) {
+                        currentWord += char;
+                    }
+                    else if (/&/.test(char)) {
+                        if (currentWord) {
+                            words.push(createToken(currentWord));
+                        }
+                        currentWord = char;
+                    }
+                    else {
+                        currentWord += char;
+                        words.push(createToken(currentWord));
+                        currentWord = '';
+                    }
+                    break;
+                case 'whitespace':
+                    if (isStartOfTag(char)) {
+                        if (currentWord) {
+                            words.push(createToken(currentWord));
+                        }
+                        currentWord = '<';
+                        mode = 'tag';
+                    }
+                    else if (isWhitespace(char)) {
+                        currentWord += char;
+                    }
+                    else {
+                        if (currentWord) {
+                            words.push(createToken(currentWord));
+                        }
+                        currentWord = char;
+                        mode = 'char';
+                    }
+                    break;
+                default:
+                    throw new Error('Unknown mode ' + mode);
+            }
         }
+    }
+    catch (e_1_1) { e_1 = { error: e_1_1 }; }
+    finally {
+        try {
+            if (html_1_1 && !html_1_1.done && (_a = html_1.return)) _a.call(html_1);
+        }
+        finally { if (e_1) throw e_1.error; }
     }
     if (currentWord) {
         words.push(createToken(currentWord));
@@ -275,12 +298,12 @@ function getKeyForToken(token) {
     // If the token is an image element, grab it's src attribute to include in the key.
     var img = /^<img.*src=['"]([^"']*)['"].*>$/.exec(token);
     if (img) {
-        return '<img src="' + img[1] + '">';
+        return "<img src=\"" + img[1] + "\">";
     }
     // If the token is an object element, grab it's data attribute to include in the key.
     var object = /^<object.*data=['"]([^"']*)['"]/.exec(token);
     if (object) {
-        return '<object src="' + object[1] + '"></object>';
+        return "<object src=\"" + object[1] + "\"></object>";
     }
     // If it's a video, math or svg element, the entire token should be compared except the
     // data-uuid.
@@ -298,12 +321,12 @@ function getKeyForToken(token) {
     // If the token is an iframe element, grab it's src attribute to include in it's key.
     var iframe = /^<iframe.*src=['"]([^"']*)['"].*>/.exec(token);
     if (iframe) {
-        return '<iframe src="' + iframe[1] + '"></iframe>';
+        return "<iframe src=\"" + iframe[1] + "\"></iframe>";
     }
     // If the token is any other element, just grab the tag name.
     var tagName = /<([^\s>]+)[\s>]/.exec(token);
     if (tagName) {
-        return '<' + ((_a = tagName[1]) === null || _a === void 0 ? void 0 : _a.toLowerCase()) + '>';
+        return "<" + ((_a = tagName[1]) === null || _a === void 0 ? void 0 : _a.toLowerCase()) + ">";
     }
     // Otherwise, the token is text, collapse the whitespace.
     if (token) {
@@ -383,13 +406,13 @@ function addToNode(node, match) {
     }
 }
 function nodeToArray(node) {
-    function inOrder(node, nodes) {
-        if (node) {
-            inOrder(node.left, nodes);
-            nodes.push(node.value);
-            inOrder(node.right, nodes);
+    function inOrder(n, ns) {
+        if (n) {
+            inOrder(n.left, ns);
+            ns.push(n.value);
+            inOrder(n.right, ns);
         }
-        return nodes;
+        return ns;
     }
     return inOrder(node, []);
 }
@@ -406,14 +429,13 @@ export function findBestMatch(segment) {
     var afterMap = segment.afterMap;
     var lastSpace = null;
     var bestMatch;
-    // Iterate through the entirety of the beforeTokens to find the best match.
-    for (var beforeIndex = 0; beforeIndex < beforeTokens.length; beforeIndex++) {
+    var _loop_1 = function (beforeIndex) {
         var lookBehind = false;
         // If the current best match is longer than the remaining tokens, we can bail because we
         // won't find a better match.
         var remainingTokens = beforeTokens.length - beforeIndex;
         if (bestMatch && remainingTokens < bestMatch.length) {
-            break;
+            return "break";
         }
         // If the current token is whitespace, make a note of it and move on. Trying to start a
         // set of matches with whitespace is not efficient because it's too prevelant in most
@@ -422,7 +444,7 @@ export function findBestMatch(segment) {
         var beforeToken = beforeTokens[beforeIndex];
         if ((beforeToken === null || beforeToken === void 0 ? void 0 : beforeToken.key) === ' ') {
             lastSpace = beforeIndex;
-            continue;
+            return "continue";
         }
         // Check to see if we just skipped a space, if so, we'll ask getFullMatch to look behind
         // by one token to see if it can include the whitespace.
@@ -433,7 +455,7 @@ export function findBestMatch(segment) {
         // on.
         var afterTokenLocations = beforeToken && afterMap[beforeToken.key];
         if (!afterTokenLocations) {
-            continue;
+            return "continue";
         }
         // For each instance of the current token in afterTokens, let's see how big of a match
         // we can build.
@@ -441,12 +463,18 @@ export function findBestMatch(segment) {
             // getFullMatch will see how far the current token match will go in both
             // beforeTokens and afterTokens.
             var bestMatchLength = bestMatch ? bestMatch.length : 0;
-            var match = getFullMatch(segment, beforeIndex, afterIndex, bestMatchLength, lookBehind);
+            var m = getFullMatch(segment, beforeIndex, afterIndex, bestMatchLength, lookBehind);
             // If we got a new best match, we'll save it aside.
-            if (match && match.length > bestMatchLength) {
-                bestMatch = match;
+            if (m && m.length > bestMatchLength) {
+                bestMatch = m;
             }
         });
+    };
+    // Iterate through the entirety of the beforeTokens to find the best match.
+    for (var beforeIndex = 0; beforeIndex < beforeTokens.length; beforeIndex++) {
+        var state_1 = _loop_1(beforeIndex);
+        if (state_1 === "break")
+            break;
     }
     return bestMatch;
 }
@@ -513,7 +541,7 @@ function getFullMatch(segment, beforeStart, afterStart, minLength, lookBehind) {
             currentLength++;
         }
     }
-    return Match(beforeStart, afterStart, currentLength, segment);
+    return makeMatch(beforeStart, afterStart, currentLength, segment);
 }
 /**
  * Creates segment objects from the original document that can be used to restrict the area that
@@ -607,9 +635,9 @@ export function calculateOperations(beforeTokens, afterTokens) {
     var operations = [];
     var segment = createSegment(beforeTokens, afterTokens, 0, 0);
     var matches = findMatchingBlocks(segment);
-    matches.push(Match(beforeTokens.length, afterTokens.length, 0, segment));
+    matches.push(makeMatch(beforeTokens.length, afterTokens.length, 0, segment));
     matches.forEach(function (match) {
-        var actionUpToMatchPositions = "none";
+        var actionUpToMatchPositions = 'none';
         if (positionInBefore === match.startInBefore) {
             if (positionInAfter !== match.startInAfter) {
                 actionUpToMatchPositions = 'insert';
@@ -748,7 +776,7 @@ function combineTokenNotes(mapFn, tagFn, tokenNotes) {
 function wrap(tag, content, opIndex, dataPrefix, className) {
     var wrapper = TokenWrapper(content);
     dataPrefix = dataPrefix ? dataPrefix + '-' : '';
-    var attrs = ' data-' + dataPrefix + 'operation-index="' + opIndex + '"';
+    var attrs = " data-" + dataPrefix + "operation-index=\"" + opIndex + "\"";
     if (className) {
         attrs += ' class="' + className + '"';
     }
@@ -765,8 +793,8 @@ function wrap(tag, content, opIndex, dataPrefix, className) {
         return '';
     }, function (openingTag) {
         var dataAttrs = ' data-diff-node="' + tag + '"';
-        dataAttrs += ' data-' + dataPrefix + 'operation-index="' + opIndex + '"';
-        return openingTag ? openingTag.replace(/>\s*$/, dataAttrs + '$&') : "";
+        dataAttrs += " data-" + dataPrefix + "operation-index=\"" + opIndex + "\"";
+        return openingTag ? openingTag.replace(/>\s*$/, dataAttrs + '$&') : '';
     }, wrapper);
 }
 /**
@@ -790,12 +818,13 @@ function wrap(tag, content, opIndex, dataPrefix, className) {
  * @return {string} The rendering of that operation.
  */
 var OPS = {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     'equal': function (op, beforeTokens, afterTokens, opIndex, dataPrefix, className) {
         var tokens = op.endInAfter ?
             afterTokens.slice(op.startInAfter, op.endInAfter + 1) :
             afterTokens.slice(op.startInAfter, 1);
         return tokens.reduce(function (prev, curr) {
-            return prev + curr.string;
+            return prev + curr.str;
         }, '');
     },
     'insert': function (op, beforeTokens, afterTokens, opIndex, dataPrefix, className) {
@@ -803,7 +832,7 @@ var OPS = {
             afterTokens.slice(op.startInAfter, op.endInAfter + 1) :
             afterTokens.slice(op.startInAfter, 1);
         var val = tokens.map(function (token) {
-            return token.string;
+            return token.str;
         });
         return wrap('ins', val, opIndex, dataPrefix, className);
     },
@@ -812,13 +841,13 @@ var OPS = {
             beforeTokens.slice(op.startInBefore, op.endInBefore + 1) :
             beforeTokens.slice(op.startInBefore, 1);
         var val = tokens.map(function (token) {
-            return token.string;
+            return token.str;
         });
         return wrap('del', val, opIndex, dataPrefix, className);
     },
     'replace': function (op, beforeTokens, afterTokens, opIndex, dataPrefix, className) {
-        return OPS['delete'].apply(null, [op, beforeTokens, afterTokens, opIndex, dataPrefix, className])
-            + OPS['insert'].apply(null, [op, beforeTokens, afterTokens, opIndex, dataPrefix, className]);
+        return OPS.delete.apply(null, [op, beforeTokens, afterTokens, opIndex, dataPrefix, className])
+            + OPS.insert.apply(null, [op, beforeTokens, afterTokens, opIndex, dataPrefix, className]);
     }
 };
 /**

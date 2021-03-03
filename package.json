@@ -24,12 +24,16 @@
   "types": "dist/htmldiff.d.ts",
   "dependencies": {},
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "~4.16.1",
+    "@typescript-eslint/parser": "~4.16.1",
+    "eslint": "~7.21.0",
     "typescript": "4.2.2",
     "@types/node": "14.14.31",
-    "chai": "*",
-    "mocha": "*"
+    "chai": "~4.3.1",
+    "mocha": "~8.3.0"
   },
   "scripts": {
+    "lint": "eslint --config='.eslintrc.cjs' './src/*.ts' --fix",
     "test": "npm run make && mocha -R min",
     "make": "tsc -p tsconfig.json"
   }
