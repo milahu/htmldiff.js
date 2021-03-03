@@ -89,7 +89,7 @@ describe('Diff', function(){
       expect(diff(a11, a21)).to.eql(`<del data-operation-index="1">${a11}</del><ins data-operation-index="1">${a21}</ins>`);
     });
     it('should show two anchors as different if their src and text is different', function() {
-      expect(diff(a11, a22)).to.eql('<del data-operation-index="1">${a11}</del><ins data-operation-index="1">${a22}</ins>');
+      expect(diff(a11, a22)).to.eql(`<del data-operation-index="1">${a11}</del><ins data-operation-index="1">${a22}</ins>`);
     });
   });
 
