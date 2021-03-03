@@ -68,7 +68,7 @@ function isEndOfHTMLComment(word) {
     return /-->$/.test(word);
 }
 // Added head and style (for style tags inside the body)
-var atomicTagsRegExp = /^<(iframe|object|math|svg|script|video|head|style)/;
+var atomicTagsRegExp = /^<(iframe|object|math|svg|script|video|head|style|a)/;
 /**
  * Checks if the current word is the beginning of an atomic tag. An atomic tag is one whose
  * child nodes should not be compared - the entire tag should be treated as one token. This
@@ -303,7 +303,12 @@ function getKeyForToken(token) {
     // If the token is an object element, grab it's data attribute to include in the key.
     var object = /^<object.*data=['"]([^"']*)['"]/.exec(token);
     if (object) {
-        return "<object src=\"" + object[1] + "\"></object>";
+        return "<object src=\"" + object[1] + "\"></object>"; // is src supposed to be data here?
+    }
+    // Treat the entire anchor as needing to be compared
+    var anchor = /^<a.*href=['"]([^"']*)['"]/.exec(token);
+    if (anchor) {
+        return token;
     }
     // If it's a video, math or svg element, the entire token should be compared except the
     // data-uuid.

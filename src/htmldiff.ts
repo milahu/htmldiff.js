@@ -64,7 +64,7 @@ function isEndOfHTMLComment(word: string): boolean {
 }
 
 // Added head and style (for style tags inside the body)
-const atomicTagsRegExp = /^<(iframe|object|math|svg|script|video|head|style)/;
+const atomicTagsRegExp = /^<(iframe|object|math|svg|script|video|head|style|a)/;
 
 /**
  * Checks if the current word is the beginning of an atomic tag. An atomic tag is one whose
@@ -302,7 +302,13 @@ function getKeyForToken(token: string){
   // If the token is an object element, grab it's data attribute to include in the key.
   const object = /^<object.*data=['"]([^"']*)['"]/.exec(token);
   if (object) {
-    return `<object src="${object[1]}"></object>`;
+    return `<object src="${object[1]}"></object>`; // is src supposed to be data here?
+  }
+
+  // Treat the entire anchor as needing to be compared
+  const anchor = /^<a.*href=['"]([^"']*)['"]/.exec(token);
+  if (anchor) {
+    return token;
   }
 
   // If it's a video, math or svg element, the entire token should be compared except the

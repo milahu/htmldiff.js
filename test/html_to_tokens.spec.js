@@ -104,8 +104,8 @@ describe('htmlToTokens', function(){
       expect(cutResult).eql(tokenizeResult);
     });
 
-    it('should identify anchor tags as three tokens', function() {
-      expect(htmlToTokens('<a src="1">text</a>')).eql(tokenize(['<a src="1">', 'text', '</a>']));
+    it('should identify anchor tags as one token', function() {
+      expect(htmlToTokens('<a src="1">text</a>')).eql(tokenize(['<a src="1">text</a>']));
     });
 
     it('should identify a script tag as a single token', function(){
