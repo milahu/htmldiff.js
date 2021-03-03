@@ -1,64 +1,40 @@
 {
-    "name": "v-node-htmldiff",
-    "description": "Diff and markup HTML with <ins> and <del> tags",
-    "companyname": "idesis GmbH",
-    "copyright": "©2018, idesis GmbH; ©2012 The Network Inc. and contributors",
-    "version": "1.0.1",
-    "identifier": "de.idesis.node-htmldiff",
-    "keywords": [
-        "diff",
-        "html",
-        "htmldiff",
-        "ins",
-        "del"
-    ],
-    "homepage": "https://github.com/idesis-gmbh/htmldiff.js",
-    "author": {
-      "name": "Michael Nitze",
-      "email": "michael.nitze@idesis.de",
-      "url": "http://www.idesis.de"
-    },
-    "contributors": [
-        "The Network Inc. (http://www.tninetwork.com, https://github.com/tnwinc/htmldiff.js)",
-        "Inkling (https://www.inkling.com, https://github.com/inkling/htmldiff.js)",
-        "Ian White (ianwhitester@gmail.com, https://github.com/ian97531)"
-      ],
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/nataliesantiago/htmldiff.js"
-    },
-    "readme": "README.md",
-    "bugs": {
-      "url": "https://github.com/idesis-gmbh/htmldiff.js/issues",
-      "email": "produktion@idesis.de"
-    },
-    "private": false,
-    "license": "MIT",
-    "main": "js/htmldiff.js",
-    "bin": {
-        "htmldiff": "./htmldiff-cli.js"
-    },
-    "files": [
-        "js/htmldiff.js",
-        "js/htmldiff.d.ts",
-        "sample/*",
-        "test/*",
-        "htmldiff-cli.js"
-    ],
-    "types": "js/htmldiff.d.ts",
-    "dependencies": { },
-    "devDependencies": {
-        "typescript": "2.7.2",
-        "tslint": "5.9.1",
-        "@types/node": "9.6.0",
-        "chai": "*",
-        "mocha": "*"
-    },
-    "scripts": {
-        "test": "mocha -R min",
-        "testsample": "node htmldiff-cli.js sample/before.html sample/after.html - -c myDiffClass -p myPrefix",
-        "lint": "tslint --exclude ./htmldiff-cli.d.ts --config ./tslint.json ./*.ts ./js/*.ts",
-        "premake": "npm run lint",
-        "make": "tsc -p tsconfig.json && node -e \"require('fs').unlinkSync('./htmldiff-cli.d.ts')\""
-    }
+  "name": "htmldiff",
+  "description": "Diff and markup HTML with <ins> and <del> tags",
+  "version": "2.0.0",
+  "homepage": "https://github.com/mblink/htmldiff.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mblink/htmldiff.js"
+  },
+  "readme": "README.md",
+  "bugs": {
+    "url": "https://github.com/mblink/issues"
+  },
+  "private": true,
+  "license": "MIT",
+  "main": "dist/htmldiff.ts",
+  "files": [
+    "dist/htmldiff.d.ts",
+    "dist/htmldiff.js",
+    "dist/htmldiff.js.map",
+    "sample/*"
+  ],
+  "type": "module",
+  "types": "dist/htmldiff.d.ts",
+  "dependencies": {},
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "~4.16.1",
+    "@typescript-eslint/parser": "~4.16.1",
+    "eslint": "~7.21.0",
+    "typescript": "4.2.2",
+    "@types/node": "14.14.31",
+    "chai": "~4.3.1",
+    "mocha": "~8.3.0"
+  },
+  "scripts": {
+    "lint": "eslint --config='.eslintrc.cjs' './src/*.ts' --fix",
+    "test": "npm run make && mocha -R min",
+    "make": "tsc -p tsconfig.json"
+  }
 }

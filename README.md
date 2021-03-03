@@ -7,8 +7,8 @@ Diff and markup HTML with `<ins>` and `<del>` tags.
 
 Quote from the original source of this fork:
 
-*`htmldiff.js` is a JavaScript port of [https://github.com/myobie/htmldiff](https://github.com/myobie/htmldiff) by
-[Keanu Lee](http://keanulee.com) at [Inkling](https://www.inkling.com/).*
+*`htmldiff.js` is a TypeScript port of [https://github.com/myobie/htmldiff](https://github.com/myobie/htmldiff) by
+[Keanu Lee](http://keanulee.com) at [Inkling](https://www.inkling.com/) via [htmldiff.js](https://github.com/nataliesantiago/htmldiff.js).*
 
 **htmldiff.js** is based on [this fork](https://github.com/inkling/htmldiff.js) and adds a few things:
 
@@ -31,21 +31,9 @@ The module can be used as module in Node.js, with RequireJS, or even just as a s
 
 ## API
 
-The module exports a single default function:
+The exports can be found in [`dist/htmldiff.d.ts`](https://github.com/mblink/htmldiff.js/blob/master/dist/htmldiff.d.ts)
 
-JavaScript:
-
-````javascript
-diff(before, after, className, dataPrefix, atomicTags);
-````
-
-TypeScript:
-
-````javascript
-function diff(before: string, after: string, className?: string | null, dataPrefix?: string | null, atomicTags?: string | null): string;
-````
-
-### Parameters
+### Diff Parameters
 
 - `before` (string) is the original HTML text.
 - `after` (string) is the HTML text after the changes have been applied.
@@ -70,14 +58,6 @@ of these three parameters it will be ignored:
 
 ### Example
 
-JavaScript:
-
-```javascript
-  diff = require('node-htmldiff');
-
-  console.log(diff('<p>This is some text</p>', '<p>That is some more text</p>', 'myClass'));
-```
-
 TypeScript:
 
 ```javascript
@@ -86,50 +66,17 @@ TypeScript:
   console.log(diff("<p>This is some text</p>", "<p>That is some more text</p>", "myClass"));
 ```
 
-Please note that `diff` is only an arbitrary name; since the module exports only one default 
-function you can use whatever name you like, e. g., `diffHTML`.
-
 Result:
 
 ```html
 <p><del data-operation-index="1" class="myClass">This</del><ins data-operation-index="1" class="myClass">That</ins> is some<ins data-operation-index="3" class="myClass"> more</ins> text.</p>
 ```
 
-
-## Command line interface
-
-```bash
-htmldiff beforeFile afterFile diffedFile [-c className] [-p dataPrefix] [-t atomicTags]
-```
-
-Parameters: 
-
-- `beforeFile` An HTML input file in its original form.
-
-- `afterFile` An HTML input file, based on `beforeFile` but with changes.
-
-- `diffedFile` Name of the diffed HTML output file. All differences between
-  `beforeFile` and `afterFile` will be surrounded with `<ins>` and `<del>`
-  tags. If diffedFile is `-` (minus) the result will be written with 
-  `console.log()` to stdout.
-
-Options:
-
-`-c className`, `-p dataPrefix` and `-t atomicTags` are all optional. For a
-description please see API documentation above.
-
-
 ## Development
-
-After cloning the repository run `npm i` or `npm install` to install the necessary 
-dependencies. A run of `npm run make` creates the JavaScript output file. 
-`npm run lint` checks the TypeScript sources with TSLint. `npm test` runs all the
-tests from the `test` directory. `npm run testsample` diffs the HTML sample files 
-from the directory `sample` and logs the result to the console.
-
-The command line interface of htmldiff is developed in TypeScript so you have to run
-`npm run make` once to create the JavaScript output file.
-
+* `npm install` to install dependencies
+* `npm run lint` to ESLint the TypeScript
+* `npm run make` to compile the TypeScript
+* `npm run test` to run the tests
 
 ## Credits
 

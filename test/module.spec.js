@@ -1,9 +1,7 @@
-describe('The module', function(){
-    var cut;
+import cut from "../dist/htmldiff.js";
 
-    beforeEach(function(){
-        cut = require('../js/htmldiff');
-    });
+
+describe('The module', function(){
 
     it('should return a function', function(){
         expect(cut).is.a('function');

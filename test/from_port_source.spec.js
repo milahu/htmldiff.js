@@ -1,9 +1,7 @@
-describe('The specs from the ruby source project', function(){
-    var cut;
+import cut from "../dist/htmldiff.js";
 
-    beforeEach(function(){
-        cut = require('../js/htmldiff');
-    });
+
+describe('The specs from the ruby source project', function(){
 
     it('should diff text', function(){
         var diff = cut('a word is here', 'a nother word is there');

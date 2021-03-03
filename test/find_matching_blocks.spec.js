@@ -1,11 +1,9 @@
+import {htmlToTokens, createToken, createSegment, findBestMatch, findMatchingBlocks, createMap} from "../dist/htmldiff.js";
+
 describe('findMatchingBlocks', function(){
-    var diff, cut, res, createToken, tokenize, createSegment, htmlToTokens;
+    var cut, res, tokenize;
 
     beforeEach(function(){
-        diff = require('../js/htmldiff');
-        createSegment = diff.findMatchingBlocks.createSegment;
-        htmlToTokens = diff.htmlToTokens;
-        createToken = diff.findMatchingBlocks.createToken;
         tokenize = function(tokens){
             return tokens.map(function(token){
                 return createToken(token);
@@ -15,7 +13,7 @@ describe('findMatchingBlocks', function(){
 
     describe('createMap', function(){
         beforeEach(function(){
-            cut = diff.findMatchingBlocks.createMap;
+            cut = createMap;
         });
 
         it('should be a function', function(){
@@ -49,7 +47,7 @@ describe('findMatchingBlocks', function(){
         var invoke;
 
         beforeEach(function(){
-            cut = diff.findMatchingBlocks.findBestMatch;
+            cut = findBestMatch;
             invoke = function(before, after){
                 var segment = createSegment(before, after, 0, 0);
 
@@ -107,7 +105,7 @@ describe('findMatchingBlocks', function(){
         var segment;
 
         beforeEach(function(){
-            cut = diff.findMatchingBlocks;
+            cut = findMatchingBlocks;
         });
 
         it('should be a function', function(){
