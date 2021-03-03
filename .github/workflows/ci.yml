@@ -1,10 +1,10 @@
-name: Lint
+name: CI
 
 on: push
 
 jobs:
   run-linters:
-    name: Run linters
+    name: Run CI
     runs-on: ubuntu-latest
 
     steps:
@@ -16,7 +16,6 @@ jobs:
         with:
           node-version: 14
 
-      # ESLint and Prettier must be in `package.json`
       - name: Install Node.js dependencies
         run: npm ci
 
