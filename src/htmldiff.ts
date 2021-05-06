@@ -295,7 +295,8 @@ export function htmlToTokens(html: string): Token[] {
           if (currentWord){
             words.push(createToken(currentWord, currentWordPos));
           }
-          currentWord = char;
+          currentWord = '';
+          charIdx--; // seek back
           currentWordPos = charIdx;
           mode = 'char';
         }
