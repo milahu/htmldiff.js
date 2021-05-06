@@ -25,6 +25,11 @@
  *   htmldiff('<p>this is some text</p>', '<p>this is some more text</p>', 'diff-class')
  *   == '<p>this is some <ins class="diff-class">more </ins>text</p>'
  */
+
+import XRegExp from 'xregexp';
+
+const unicodeLetterExpr = XRegExp('\\p{L}|\\d');
+
 function isEndOfTag(char: string): boolean {
   return char === '>';
 }
@@ -189,8 +194,9 @@ export function htmlToTokens(html: string): Token[] {
   let currentAtomicTag = '';
   const words = [];
 
-  for (let charIdx = 0; charIdx < html.length; charIdx++) {
-    const char = html[charIdx] as string;
+  const unicodeChars = Array.from(html);
+  for (let charIdx = 0; charIdx < unicodeChars.length; charIdx++) {
+    const char = unicodeChars[charIdx] as string;
     switch (mode){
       case 'tag': {
         const atomicTag = isStartOfAtomicTag(currentWord);
@@ -251,7 +257,7 @@ export function htmlToTokens(html: string): Token[] {
           currentWord = char;
           currentWordPos = charIdx;
           mode = 'whitespace';
-        } else if (/[\w\d#@]/.test(char)){
+        } else if (unicodeLetterExpr.test(char)) {
           currentWord += char;
         } else if (char == '&'){
           if (currentWord){
