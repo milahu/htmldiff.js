@@ -253,17 +253,30 @@ export function htmlToTokens(html: string): Token[] {
           mode = 'whitespace';
         } else if (/[\w\d#@]/.test(char)){
           currentWord += char;
-        } else if (/&/.test(char)){
+        } else if (char == '&'){
           if (currentWord){
             words.push(createToken(currentWord, currentWordPos));
           }
           currentWord = char;
           currentWordPos = charIdx;
+          mode = 'entity';
         } else {
+          words.push(createToken(currentWord, currentWordPos));
+          words.push(createToken(char, charIdx));
+          currentWord = '';
+          currentWordPos = charIdx + 1;
+        }
+        break;
+      case 'entity':
+        if (char == ';') {
           currentWord += char;
           words.push(createToken(currentWord, currentWordPos));
           currentWord = '';
           currentWordPos = charIdx + 1;
+          mode = 'char';
+        }
+        else {
+          currentWord += char;
         }
         break;
       case 'whitespace':
