@@ -121,6 +121,7 @@ function isWrappable(token: string): boolean {
 type Token = {
   str: string;
   key: string;
+  pos: number;
 };
 
 /**
@@ -131,10 +132,11 @@ type Token = {
  *
  * @return {Object} A token object with a string and key property.
  */
-export function createToken(currentWord: string): Token {
+export function createToken(currentWord: string, currentWordPos: number): Token {
   return {
     str: currentWord,
-    key: getKeyForToken(currentWord)
+    key: getKeyForToken(currentWord),
+    pos: currentWordPos
   };
 }
 
@@ -183,10 +185,12 @@ function makeMatch(startInBefore: number, startInAfter: number, length: number, 
 export function htmlToTokens(html: string): Token[] {
   let mode = 'char';
   let currentWord = '';
+  let currentWordPos = 0;
   let currentAtomicTag = '';
   const words = [];
 
-  for (const char of html) {
+  for (let charIdx = 0; charIdx < html.length; charIdx++) {
+    const char = html[charIdx] as string;
     switch (mode){
       case 'tag': {
         const atomicTag = isStartOfAtomicTag(currentWord);
@@ -199,8 +203,9 @@ export function htmlToTokens(html: string): Token[] {
           currentWord += char;
         } else if (isEndOfTag(char)){
           currentWord += '>';
-          words.push(createToken(currentWord));
+          words.push(createToken(currentWord, currentWordPos));
           currentWord = '';
+          currentWordPos = charIdx + 1;
           if (isWhitespace(char)){
             mode = 'whitespace';
           } else {
@@ -214,8 +219,9 @@ export function htmlToTokens(html: string): Token[] {
       case 'atomic_tag':
         if (isEndOfTag(char) && isEndOfAtomicTag(currentWord, currentAtomicTag)){
           currentWord += '>';
-          words.push(createToken(currentWord));
+          words.push(createToken(currentWord, currentWordPos));
           currentWord = '';
+          currentWordPos = charIdx + 1;
           currentAtomicTag = '';
           mode = 'char';
         } else {
@@ -226,49 +232,56 @@ export function htmlToTokens(html: string): Token[] {
         currentWord += char;
         if (isEndOfHTMLComment(currentWord)){
           currentWord = '';
+          currentWordPos = charIdx + 1;
           mode = 'char';
         }
         break;
       case 'char':
         if (isStartOfTag(char)){
           if (currentWord){
-            words.push(createToken(currentWord));
+            words.push(createToken(currentWord, currentWordPos));
           }
           currentWord = '<';
+          currentWordPos = charIdx;
           mode = 'tag';
         } else if (/\s/.test(char)){
           if (currentWord){
-            words.push(createToken(currentWord));
+            words.push(createToken(currentWord, currentWordPos));
           }
           currentWord = char;
+          currentWordPos = charIdx;
           mode = 'whitespace';
         } else if (/[\w\d#@]/.test(char)){
           currentWord += char;
         } else if (/&/.test(char)){
           if (currentWord){
-            words.push(createToken(currentWord));
+            words.push(createToken(currentWord, currentWordPos));
           }
           currentWord = char;
+          currentWordPos = charIdx;
         } else {
           currentWord += char;
-          words.push(createToken(currentWord));
+          words.push(createToken(currentWord, currentWordPos));
           currentWord = '';
+          currentWordPos = charIdx + 1;
         }
         break;
       case 'whitespace':
         if (isStartOfTag(char)){
           if (currentWord){
-            words.push(createToken(currentWord));
+            words.push(createToken(currentWord, currentWordPos));
           }
           currentWord = '<';
+          currentWordPos = charIdx;
           mode = 'tag';
         } else if (isWhitespace(char)){
           currentWord += char;
         } else {
           if (currentWord){
-            words.push(createToken(currentWord));
+            words.push(createToken(currentWord, currentWordPos));
           }
           currentWord = char;
+          currentWordPos = charIdx;
           mode = 'char';
         }
         break;
@@ -277,7 +290,7 @@ export function htmlToTokens(html: string): Token[] {
     }
   }
   if (currentWord){
-    words.push(createToken(currentWord));
+    words.push(createToken(currentWord, currentWordPos));
   }
   return words;
 }

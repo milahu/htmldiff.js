@@ -8,8 +8,11 @@ describe('htmlToTokens', function(){
     cut = htmlToTokens;
 
     tokenize = function(tokens){
+      let tokenIdx = 0;
       return tokens.map(function(token){
-        return createToken(token);
+        const res = createToken(token, tokenIdx);
+        tokenIdx += token.length;
+        return res;
       });
     };
   });
