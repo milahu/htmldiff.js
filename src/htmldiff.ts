@@ -261,7 +261,9 @@ export function htmlToTokens(html: string): Token[] {
           currentWordPos = charIdx;
           mode = 'entity';
         } else {
-          words.push(createToken(currentWord, currentWordPos));
+          if (currentWord){
+            words.push(createToken(currentWord, currentWordPos));
+          }
           words.push(createToken(char, charIdx));
           currentWord = '';
           currentWordPos = charIdx + 1;
