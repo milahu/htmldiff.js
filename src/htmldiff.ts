@@ -931,7 +931,7 @@ function wrap(tag: string, content: string[], opIndex: number, dataPrefix: strin
 }
 
 /**
- * OPS.equal/insert/delete/replace are functions that render an operation into
+ * renderHandler.equal/insert/delete/replace are functions that render an operation into
  * HTML content.
  *
  * @param {Object} op The operation that applies to a prticular list of tokens. Has the
@@ -950,7 +950,7 @@ function wrap(tag: string, content: string[], opIndex: number, dataPrefix: strin
  *
  * @return {string} The rendering of that operation.
  */
-const OPS: {
+const renderHandler: {
   [K in 'equal' | 'insert' | 'delete' | 'replace'] : (op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: number, dataPrefix: string, className: string) => string
 } = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -981,8 +981,8 @@ const OPS: {
     return wrap('del', val, opIndex, dataPrefix, className);
   },
   'replace': function(op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: number, dataPrefix: string, className: string){
-    return OPS.delete.apply(null, [op, beforeTokens, afterTokens, opIndex, dataPrefix, className])
-      + OPS.insert.apply(null, [op, beforeTokens, afterTokens, opIndex, dataPrefix, className]);
+    return renderHandler.delete.apply(null, [op, beforeTokens, afterTokens, opIndex, dataPrefix, className])
+      + renderHandler.insert.apply(null, [op, beforeTokens, afterTokens, opIndex, dataPrefix, className]);
   }
 };
 
@@ -1007,7 +1007,7 @@ const OPS: {
  */
 export function renderOperations(beforeTokens: Token[], afterTokens: Token[], operations: Operation[], dataPrefix: string, className: string){
   return operations.reduce(function(rendering: string, op: Operation, index: number){
-    return rendering + OPS[op.action](
+    return rendering + renderHandler[op.action](
       op, beforeTokens, afterTokens, index, dataPrefix, className);
   }, '');
 }
