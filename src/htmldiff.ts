@@ -302,8 +302,8 @@ export function htmlToTokens(html: string): Token[] {
             words.push(createToken(currentWord, currentWordPos));
           }
           currentWord = '';
-          charIdx--; // seek back
           currentWordPos = charIdx;
+          charIdx--; // seek back
           mode = 'char';
         }
         break;
