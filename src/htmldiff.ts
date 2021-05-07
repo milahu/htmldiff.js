@@ -689,8 +689,10 @@ export function findMatchingBlocks(segment: Segment): Match[] {
   return nodeToArray(matches);
 }
 
+type OperationAction = 'none' | 'equal' | 'insert' | 'delete' | 'replace';
+
 type Operation = {
-  action: 'equal' | 'insert' | 'delete' | 'replace';
+  action: OperationAction;
   startInBefore: number;
   endInBefore?: number;
   startInAfter: number;
@@ -725,7 +727,7 @@ export function calculateOperations(beforeTokens: Token[], afterTokens: Token[])
   matches.push(makeMatch(beforeTokens.length, afterTokens.length, 0, segment));
 
   matches.forEach(match => {
-    let actionUpToMatchPositions: 'equal' | 'insert' | 'delete' | 'replace' | 'none'  = 'none';
+    let actionUpToMatchPositions: OperationAction  = 'none';
     if (positionInBefore === match.startInBefore){
       if (positionInAfter !== match.startInAfter){
         actionUpToMatchPositions = 'insert';
@@ -951,9 +953,10 @@ function wrap(tag: string, content: string[], opIndex: number, dataPrefix: strin
  * @return {string} The rendering of that operation.
  */
 const renderHandler: {
-  [K in 'equal' | 'insert' | 'delete' | 'replace'] : (op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: number, dataPrefix: string, className: string) => string
+  [action in OperationAction] : (op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: number, dataPrefix: string, className: string) => string
 } = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  none: () => '',
   'equal': function(op: Operation, beforeTokens: Token[], afterTokens: Token[], opIndex: number, dataPrefix: string, className: string){
     const tokens = op.endInAfter ?
       afterTokens.slice(op.startInAfter, op.endInAfter + 1) :
