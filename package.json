@@ -38,6 +38,7 @@
     "lint": "eslint --config='.eslintrc.cjs' './src/*.ts' --fix",
     "test": "npm run make && mocha -R min",
     "make": "tsc -p tsconfig.json",
+    "prepare": "npm run make",
     "diff": "git diff -- :/ ':(exclude,top)dist/*'"
   }
 }
